@@ -8,6 +8,15 @@
   <title><%= title %></title>
 </head>
 <body>
-  <h1>Bad <%= title %></h1>
+  <p>Open rate: <%= open_rate %></p>
+  <p>Clicks per unique opens: <%= clicks_per_unique_opens %></p>
+  <p>Top link: <a href="<%= top_link_url %>"><%= top_link_unslug %></a></p>
+  <ul>
+    <li>Clicked <%= top_link_total_clicks %> times, <%= top_link_unique_clicks %> unique for <%= unique_click_percentage %> of unique clicks.</li>
+  </ul>
+  <p>Top external link: <a href="<%= top_ext_link_url %>"><%= top_ext_link_domain %></a></p>
+  <ul>
+    <li>Clicked <%= top_ext_link_total_clicks %> times, <%= top_ext_link_unique_clicks %> unique for <%= top_ext_link_percent_of_unique %> of unique clicks.</li>
+  </ul>
 </body>
 </html>
