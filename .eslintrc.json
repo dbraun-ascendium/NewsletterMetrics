@@ -9,8 +9,10 @@
     "overrides": [
     ],
     "parserOptions": {
-        "ecmaVersion": "latest"
+        "ecmaVersion": "latest",
+        "sourceType": "module"
     },
     "rules": {
-    }
+    },
+    "ignorePatterns": ["public/*.js"]
 }

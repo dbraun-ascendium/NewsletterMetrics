@@ -44,7 +44,7 @@ async function report() {
 
   results.top_link_url = clicksDetail.urls_clicked[0].url.split("?")[0]
   
-  if (results.top_link_url.includes("ascendiumphilanthropy.org")) {
+  if (results.top_link_url.includes("ascendiumphilanthropy.org/news/news/")) {
     results.top_link_unslug = unslugify(
       results.top_link_url.split("//")[1].split("/news/news/")[1]
     )
@@ -61,7 +61,7 @@ async function report() {
   const externalLinks = clicksDetail.urls_clicked.filter((item) => !item.url.includes("ascendiumphilanthropy.org"))
 
   results.top_ext_link_url = externalLinks[0].url.split("?")[0]
-  results.top_ext_link_domain = results.top_ext_link_url.split("//")[1].split("/")[0]
+  results.top_ext_link_domain = results.top_ext_link_url.split("//")[1]
 
   results.top_ext_link_total_clicks = externalLinks[0].total_clicks
   results.top_ext_link_unique_clicks = externalLinks[0].unique_clicks

@@ -8,6 +8,30 @@
   <title><%= title %></title>
 </head>
 <body>
+
+  <form action="">
+    Load Files:
+    <input type="file" id="input" accept=".csv" multiple />
+  </form>
+
+  <div>
+    Loaded file(s):
+    <ul id="loadedFiles"></ul>
+  </div>
+
+  <div style="display:none;" class="results">
+    <h2 class="results-current-total">Subscribers as of </h2>
+    <p class="count"></p>
+    <h2 class="results-new-total">New Subscribers in </h2>
+    <p class="count"></p>
+    <h2 class="results-cleaned">Cleaned in </h2>
+    <p class="count"></p>
+    <h2 class="results-unsubbed">Unsubscribed in </h2>
+    <p class="count"></p>
+    <h2 class="results-snapshot">Snapshot from </h2>
+    <p class="count"></p>
+  </div>
+
   <p>Open rate: <%= open_rate %></p>
   <p>Clicks per unique opens: <%= clicks_per_unique_opens %></p>
   <p>Top link: <a href="<%= top_link_url %>"><%= top_link_unslug %></a></p>
@@ -18,5 +42,6 @@
   <ul>
     <li>Clicked <%= top_ext_link_total_clicks %> times, <%= top_ext_link_unique_clicks %> unique for <%= top_ext_link_percent_of_unique %> of unique clicks.</li>
   </ul>
+  <script src="/js/index.js"></script>
 </body>
 </html>

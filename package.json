@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "app": "nodemon app.js"
+    "app": "nodemon app.js",
+    "watch:js": "esbuild frontend/js/index.js --bundle --outdir=public/js --watch --target=chrome58,firefox57,safari11,edge16"
   },
   "keywords": [],
   "author": "",
@@ -13,9 +14,11 @@
     "@mailchimp/mailchimp_marketing": "^3.0.80",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.9",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "papaparse": "^5.4.0"
   },
   "devDependencies": {
+    "esbuild": "^0.17.12",
     "eslint": "^8.36.0",
     "nodemon": "^2.0.21"
   }
