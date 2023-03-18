@@ -5,6 +5,7 @@ const process = function (data) {
   displayLoadedFiles(data.fileNames)
   _.countEndOfMonthTotal(data.subbed)
   _.countNewSubsLastMonth(data.subbed)
+  _.getAnsweredSurvey(data.subbed)
   _.countCleanedLastMonth(data.cleaned)
   _.countUnSubbedLastMonth(data.unsubbed)
   _.countSnapshotYearAgo(data)

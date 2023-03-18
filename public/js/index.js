@@ -660,6 +660,9 @@
     "November",
     "December"
   ];
+  var month = months[endDateLastMonth.getMonth()];
+  var year = endDateLastMonth.getFullYear();
+  var lastYear = endDateLastMonthLastYear.getFullYear();
   var countEndOfMonthTotal = function(list) {
     let count = 0;
     list.forEach((subscriber) => {
@@ -667,8 +670,6 @@
       if (confTime < endDateLastMonth)
         count++;
     });
-    const month = months[endDateLastMonth.getMonth()];
-    const year = endDateLastMonth.getFullYear();
     resultDisplay.querySelector(
       ".results-current-total"
     ).textContent += `${month}, ${year}`;
@@ -676,17 +677,50 @@
       ".results-current-total + .count"
     ).textContent = `${count}`;
   };
-  var countNewSubsLastMonth = function(list) {
-    let count = 0;
+  var getNewSubsLastMonth = function(list) {
+    let newSubs = [];
     list.forEach((subscriber) => {
       const confTime = new Date(subscriber.CONFIRM_TIME);
       if (confTime < endDateLastMonth && confTime > startDateLastMonth)
-        count++;
+        newSubs.push(subscriber);
     });
-    resultDisplay.querySelector(".results-new-total").textContent += `${months[startDateLastMonth.getMonth()]}`;
+    return newSubs;
+  };
+  var countNewSubsLastMonth = function(list) {
+    const count = getNewSubsLastMonth(list).length;
+    resultDisplay.querySelector(".results-new-total").textContent += `${month}`;
     resultDisplay.querySelector(
       ".results-new-total + .count"
     ).textContent = `${count}`;
+  };
+  var getAnsweredSurvey = function(list) {
+    let countAnswered = 0;
+    let answers = [];
+    const newSubs = getNewSubsLastMonth(list);
+    newSubs.forEach((subscriber) => {
+      if (subscriber["How did you hear about us?"] != "") {
+        countAnswered++;
+        answers.push(subscriber["How did you hear about us?"]);
+      }
+    });
+    const uniqueAnswers = [...new Set(answers)];
+    let answersObjs = [];
+    uniqueAnswers.forEach((answer) => {
+      const count = answers.filter((x) => x === answer).length;
+      answersObjs.push({
+        answer,
+        count,
+        percent: (count / answers.length * 100).toFixed(1)
+      });
+    });
+    answersObjs.sort((a, b) => b.count - a.count);
+    console.dir(answersObjs);
+    displayHearAboutUs(countAnswered, newSubs.length);
+  };
+  var displayHearAboutUs = function(countAnswered, totalSubs) {
+    const hearAboutUs = document.querySelector(".hear-about-us");
+    const percentAnswered = (countAnswered / totalSubs).toFixed(2) * 100;
+    hearAboutUs.textContent = `In the month of ${month}, 2023, ${countAnswered} of ${totalSubs} new subscribers answered the \u201CHow You Found Us\u201D questionnaire (${percentAnswered}%).`;
   };
   var countCleanedLastMonth = function(list) {
     let count = 0;
@@ -695,7 +729,7 @@
       if (cleanTime < endDateLastMonth && cleanTime > startDateLastMonth)
         count++;
     });
-    resultDisplay.querySelector(".results-cleaned").textContent += `${months[endDateLastMonth.getMonth()]}`;
+    resultDisplay.querySelector(".results-cleaned").textContent += `${month}`;
     resultDisplay.querySelector(
       ".results-cleaned + .count"
     ).textContent = `${count}`;
@@ -707,7 +741,7 @@
       if (unsubTime < endDateLastMonth && unsubTime > startDateLastMonth)
         count++;
     });
-    resultDisplay.querySelector(".results-unsubbed").textContent += `${months[endDateLastMonth.getMonth()]}`;
+    resultDisplay.querySelector(".results-unsubbed").textContent += `${month}`;
     resultDisplay.querySelector(
       ".results-unsubbed + .count"
     ).textContent = `${count}`;
@@ -738,11 +772,9 @@
       }
     });
     count = countPriorYearCurrently + cleanedLastYearSubbedBefore + subbedLastYearSubbedBefore;
-    const year = endDateLastMonthLastYear.getFullYear();
-    const month = months[endDateLastMonthLastYear.getMonth()];
     resultDisplay.querySelector(
       ".results-snapshot"
-    ).textContent += `${month}, ${year}`;
+    ).textContent += `${month}, ${lastYear}`;
     resultDisplay.querySelector(
       ".results-snapshot + .count"
     ).textContent = `${count}`;
@@ -753,6 +785,7 @@
     displayLoadedFiles(data.fileNames);
     countEndOfMonthTotal(data.subbed);
     countNewSubsLastMonth(data.subbed);
+    getAnsweredSurvey(data.subbed);
     countCleanedLastMonth(data.cleaned);
     countUnSubbedLastMonth(data.unsubbed);
     countSnapshotYearAgo(data);
