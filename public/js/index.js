@@ -661,8 +661,10 @@
     "December"
   ];
   var month = months[endDateLastMonth.getMonth()];
+  var lastDay = endDateLastMonth.getDate();
   var year = endDateLastMonth.getFullYear();
   var lastYear = endDateLastMonthLastYear.getFullYear();
+  var lastDayLastYear = endDateLastMonthLastYear.getDate();
   var countEndOfMonthTotal = function(list) {
     let count = 0;
     list.forEach((subscriber) => {
@@ -672,10 +674,7 @@
     });
     resultDisplay.querySelector(
       ".results-current-total"
-    ).textContent += `${month}, ${year}`;
-    resultDisplay.querySelector(
-      ".results-current-total + .count"
-    ).textContent = `${count}`;
+    ).innerHTML = `Subscribers as of ${month}, ${lastDay} ${year}: <strong>${count}</strong>`;
   };
   var getNewSubsLastMonth = function(list) {
     let newSubs = [];
@@ -688,19 +687,20 @@
   };
   var countNewSubsLastMonth = function(list) {
     const count = getNewSubsLastMonth(list).length;
-    resultDisplay.querySelector(".results-new-total").textContent += `${month}`;
-    resultDisplay.querySelector(
-      ".results-new-total + .count"
-    ).textContent = `${count}`;
+    resultDisplay.querySelector(".results-new-total").innerHTML += `${month}: <strong>${count}</strong>`;
   };
   var getAnsweredSurvey = function(list) {
     let countAnswered = 0;
     let answers = [];
+    let otherAnswers = [];
     const newSubs = getNewSubsLastMonth(list);
     newSubs.forEach((subscriber) => {
       if (subscriber["How did you hear about us?"] != "") {
         countAnswered++;
         answers.push(subscriber["How did you hear about us?"]);
+      }
+      if (subscriber["How did you hear about us? (not listed above)"] != "") {
+        otherAnswers.push(subscriber["How did you hear about us? (not listed above)"]);
       }
     });
     const uniqueAnswers = [...new Set(answers)];
@@ -714,37 +714,57 @@
       });
     });
     answersObjs.sort((a, b) => b.count - a.count);
-    console.dir(answersObjs);
-    displayHearAboutUs(countAnswered, newSubs.length);
+    displayHearAboutUs(countAnswered, newSubs.length, answersObjs, otherAnswers);
   };
-  var displayHearAboutUs = function(countAnswered, totalSubs) {
+  var displayHearAboutUs = function(countAnswered, totalSubs, answersObjs, otherAnswers) {
     const hearAboutUs = document.querySelector(".hear-about-us");
     const percentAnswered = (countAnswered / totalSubs).toFixed(2) * 100;
-    hearAboutUs.textContent = `In the month of ${month}, 2023, ${countAnswered} of ${totalSubs} new subscribers answered the \u201CHow You Found Us\u201D questionnaire (${percentAnswered}%).`;
+    hearAboutUs.innerHTML = `In the month of ${month}, ${year}, <strong>${countAnswered}</strong> of <strong>${totalSubs}</strong> new subscribers answered the \u201CHow You Found Us\u201D questionnaire (<strong>${percentAnswered}%</strong>).`;
+    let table = document.querySelector(".results-bottom table");
+    const th = table.createTHead();
+    const tRow = th.insertRow();
+    tRow.insertCell().textContent = "Answer";
+    tRow.insertCell().textContent = "Count";
+    tRow.insertCell().textContent = "Percent";
+    const tBody = table.createTBody();
+    answersObjs.forEach((answer) => {
+      const newRow = tBody.insertRow();
+      newRow.insertCell().textContent = answer.answer;
+      newRow.insertCell().textContent = answer.count;
+      newRow.insertCell().textContent = `${answer.percent}%`;
+    });
+    const otherReasonsUL = document.querySelector(".results-bottom ul");
+    const uniqueOtherAnswers = [...new Set(otherAnswers)];
+    uniqueOtherAnswers.forEach((otherAnswer) => {
+      const li = document.createElement("li");
+      li.textContent = otherAnswer;
+      otherReasonsUL.appendChild(li);
+    });
   };
-  var countCleanedLastMonth = function(list) {
-    let count = 0;
-    list.forEach((cleaned) => {
+  var countRemovedLastMonth = function(unsubbedList, cleanedList) {
+    let unsubbedCount = 0;
+    let cleanedCount = 0;
+    cleanedList.forEach((cleaned) => {
       const cleanTime = new Date(cleaned.CLEAN_TIME);
       if (cleanTime < endDateLastMonth && cleanTime > startDateLastMonth)
-        count++;
+        cleanedCount++;
     });
-    resultDisplay.querySelector(".results-cleaned").textContent += `${month}`;
-    resultDisplay.querySelector(
-      ".results-cleaned + .count"
-    ).textContent = `${count}`;
-  };
-  var countUnSubbedLastMonth = function(list) {
-    let count = 0;
-    list.forEach((unsubbed) => {
+    unsubbedList.forEach((unsubbed) => {
       const unsubTime = new Date(unsubbed.UNSUB_TIME);
       if (unsubTime < endDateLastMonth && unsubTime > startDateLastMonth)
-        count++;
+        unsubbedCount++;
     });
-    resultDisplay.querySelector(".results-unsubbed").textContent += `${month}`;
+    displayRemovedResults(unsubbedCount, cleanedCount);
+  };
+  var displayRemovedResults = function(unsubbedCount, cleanedCount) {
+    const resultsRemoved = document.querySelector(".results-removed");
+    resultsRemoved.textContent = `Total users removed in ${month}, ${year}`;
     resultDisplay.querySelector(
-      ".results-unsubbed + .count"
-    ).textContent = `${count}`;
+      ".results-cleaned"
+    ).innerHTML += ` ${month}: <strong>${cleanedCount}</strong>`;
+    resultDisplay.querySelector(
+      ".results-unsubbed"
+    ).innerHTML += ` ${month}: <strong>${unsubbedCount}</strong>`;
   };
   var countSnapshotYearAgo = function(data) {
     let count = 0;
@@ -774,10 +794,7 @@
     count = countPriorYearCurrently + cleanedLastYearSubbedBefore + subbedLastYearSubbedBefore;
     resultDisplay.querySelector(
       ".results-snapshot"
-    ).textContent += `${month}, ${lastYear}`;
-    resultDisplay.querySelector(
-      ".results-snapshot + .count"
-    ).textContent = `${count}`;
+    ).innerHTML += `HISTORICAL SNAPSHOT: Total Subscribers on ${month}, ${lastDayLastYear} ${lastYear}: <strong>${count}</strong>`;
   };
 
   // frontend/js/index.js
@@ -786,8 +803,7 @@
     countEndOfMonthTotal(data.subbed);
     countNewSubsLastMonth(data.subbed);
     getAnsweredSurvey(data.subbed);
-    countCleanedLastMonth(data.cleaned);
-    countUnSubbedLastMonth(data.unsubbed);
+    countRemovedLastMonth(data.unsubbed, data.cleaned);
     countSnapshotYearAgo(data);
   };
   var displayLoadedFiles = function(list) {
@@ -801,7 +817,8 @@
   var inputElement = document.getElementById("input");
   inputElement.addEventListener("change", function() {
     document.querySelector("form").style.display = "none";
-    document.querySelector(".results").style.display = "block";
+    const results = [...document.querySelectorAll(".results")];
+    results.forEach((result) => result.style.display = "block");
     handleFiles(this.files, process);
   });
 })();

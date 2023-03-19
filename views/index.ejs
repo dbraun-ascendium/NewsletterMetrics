@@ -1,49 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles/style.css">
-  <title><%= title %></title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/style.css" />
+    <title><%= title %></title>
+  </head>
+  <body>
+    <form action="">
+      Load Files:
+      <input type="file" id="input" accept=".csv" multiple />
+    </form>
 
-  <form action="">
-    Load Files:
-    <input type="file" id="input" accept=".csv" multiple />
-  </form>
+    <div>
+      Loaded file(s):
+      <ul id="loadedFiles"></ul>
+    </div>
 
-  <div>
-    Loaded file(s):
-    <ul id="loadedFiles"></ul>
-  </div>
+    
+    <div style="display: none" class="results results-top">
+      <h2>Newsletter Audience*</h2>
+      <p class="results-current-total"> </p>
+      <p class="results-snapshot"></p>
 
-  <div style="display:none;" class="results">
-    <h2 class="results-current-total">Subscribers as of </h2>
-    <p class="count"></p>
-    <h2 class="results-new-total">New Subscribers in </h2>
-    <p class="count"></p>
-    <h2 class="results-cleaned">Cleaned in </h2>
-    <p class="count"></p>
-    <h2 class="results-unsubbed">Unsubscribed in </h2>
-    <p class="count"></p>
-    <h2 class="results-snapshot">Snapshot from </h2>
-    <p class="count"></p>
-    <h2>How They Found Us</h2> 
-    <p class="hear-about-us"></p>
-  </div>
+      <p class="results-removed">Total users removed in</p>
+      <ul>
+        <li class="results-cleaned">Cleaned** in </li>
+        <li class="results-unsubbed">Unsubscribed in </li>
+      </ul>
 
-  <p>Open rate: <%= open_rate %></p>
-  <p>Clicks per unique opens: <%= clicks_per_unique_opens %></p>
-  <p>Top link: <a href="<%= top_link_url %>"><%= top_link_unslug %></a></p>
-  <ul>
-    <li>Clicked <%= top_link_total_clicks %> times, <%= top_link_unique_clicks %> unique for <%= unique_click_percentage %> of unique clicks.</li>
-  </ul>
-  <p>Top external link: <a href="<%= top_ext_link_url %>"><%= top_ext_link_domain %></a></p>
-  <ul>
-    <li>Clicked <%= top_ext_link_total_clicks %> times, <%= top_ext_link_unique_clicks %> unique for <%= top_ext_link_percent_of_unique %> of unique clicks.</li>
-  </ul>
-  <script src="/js/index.js"></script>
-</body>
+      <p class="results-new-total">New Subscribers in </p>
+
+      <p>*Including Ascendium Employees<br>
+        ** Cleaned contacts have email addresses that have hard bounced or repeatedly soft bounced, and are considered invalid.</p>
+    </div>
+
+    <h2>Newsletter Opens and Link Performance</h2>
+    
+      <p>Open rate: <strong><%= open_rate %></strong> (non-profit industry average 25-26%. More information <a href="https://mailchimp.com/resources/email-marketing-benchmarks/">here</a> and <a href="https://www.campaignmonitor.com/resources/guides/email-marketing-benchmarks/">here</a>.)</p>
+    <p>Clicks per unique opens: <strong><%= clicks_per_unique_opens %></strong></p>
+    <p>Top link: <a href="<%= top_link_url %>"><%= top_link_unslug %></a></p>
+    <ul>
+      <li>
+        Clicked <strong><%= top_link_total_clicks %></strong> times, <strong><%= top_link_unique_clicks
+        %></strong> unique for <strong><%= unique_click_percentage %></strong> of unique clicks.
+      </li>
+    </ul>
+    <p>
+      Top external link:
+      <a href="<%= top_ext_link_url %>"><%= top_ext_link_domain %></a>
+    </p>
+    <ul>
+      <li>
+        Clicked <strong><%= top_ext_link_total_clicks %></strong> times, <strong><%=
+        top_ext_link_unique_clicks %></strong> unique for <strong><%=
+        top_ext_link_percent_of_unique %></strong> of unique clicks.
+      </li>
+    </ul>
+
+    <div class="results results-bottom" style="display: none">
+      <h2>How They Found Us</h2>
+      <p class="hear-about-us"></p>
+      <table></table>
+      <p>Of the subscribers who answered “other”, the following reasons were given:</p>
+      <ul></ul>
+    </div>
+
+    <script src="/js/index.js"></script>
+  </body>
 </html>

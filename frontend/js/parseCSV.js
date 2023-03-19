@@ -32,8 +32,10 @@ const months = [
   "December",
 ]
 const month = months[endDateLastMonth.getMonth()]
+const lastDay = endDateLastMonth.getDate()
 const year = endDateLastMonth.getFullYear()
 const lastYear = endDateLastMonthLastYear.getFullYear()
+const lastDayLastYear = endDateLastMonthLastYear.getDate()
 
 const countEndOfMonthTotal = function (list) {
   let count = 0
@@ -44,10 +46,7 @@ const countEndOfMonthTotal = function (list) {
 
   resultDisplay.querySelector(
     ".results-current-total"
-  ).textContent += `${month}, ${year}`
-  resultDisplay.querySelector(
-    ".results-current-total + .count"
-  ).textContent = `${count}`
+  ).innerHTML = `Subscribers as of ${month}, ${lastDay} ${year}: <strong>${count}</strong>`
 }
 const getNewSubsLastMonth = function (list) {
   let newSubs = []
@@ -60,21 +59,22 @@ const getNewSubsLastMonth = function (list) {
 }
 const countNewSubsLastMonth = function (list) {
   const count = getNewSubsLastMonth(list).length
-  resultDisplay.querySelector(".results-new-total").textContent += `${month}`
-  resultDisplay.querySelector(
-    ".results-new-total + .count"
-  ).textContent = `${count}`
+  resultDisplay.querySelector(".results-new-total").innerHTML += `${month}: <strong>${count}</strong>`
 }
 
 const getAnsweredSurvey = function (list) {
   let countAnswered = 0
   let answers = []
+  let otherAnswers = []
 
   const newSubs = getNewSubsLastMonth(list)
   newSubs.forEach((subscriber) => {
     if (subscriber["How did you hear about us?"] != "") {
       countAnswered++
       answers.push(subscriber["How did you hear about us?"])
+    }
+    if (subscriber["How did you hear about us? (not listed above)"] != "") {
+      otherAnswers.push(subscriber["How did you hear about us? (not listed above)"])
     }
   })
   const uniqueAnswers = [...new Set(answers)]
@@ -90,37 +90,57 @@ const getAnsweredSurvey = function (list) {
   })
   answersObjs.sort((a, b) => b.count - a.count)
 
-  console.dir(answersObjs)
-  displayHearAboutUs(countAnswered, newSubs.length)
+  displayHearAboutUs(countAnswered, newSubs.length, answersObjs, otherAnswers)
 }
-const displayHearAboutUs = function (countAnswered, totalSubs) {
+const displayHearAboutUs = function (countAnswered, totalSubs, answersObjs, otherAnswers) {
   const hearAboutUs = document.querySelector(".hear-about-us")
   const percentAnswered = (countAnswered / totalSubs).toFixed(2) * 100
-  hearAboutUs.textContent = `In the month of ${month}, 2023, ${countAnswered} of ${totalSubs} new subscribers answered the “How You Found Us” questionnaire (${percentAnswered}%).`
+  hearAboutUs.innerHTML = `In the month of ${month}, ${year}, <strong>${countAnswered}</strong> of <strong>${totalSubs}</strong> new subscribers answered the “How You Found Us” questionnaire (<strong>${percentAnswered}%</strong>).`
+  let table = document.querySelector('.results-bottom table');
+  const th = table.createTHead()
+  const tRow = th.insertRow()
+  tRow.insertCell().textContent = "Answer"
+  tRow.insertCell().textContent = "Count"
+  tRow.insertCell().textContent = "Percent"
+  const tBody = table.createTBody()
+  answersObjs.forEach((answer => {
+    const newRow = tBody.insertRow();
+    newRow.insertCell().textContent = answer.answer
+    newRow.insertCell().textContent = answer.count
+    newRow.insertCell().textContent = `${answer.percent}%`
+  }))
+  const otherReasonsUL = document.querySelector('.results-bottom ul')
+  const uniqueOtherAnswers = [...new Set(otherAnswers)]
+  uniqueOtherAnswers.forEach((otherAnswer) => {
+    const li = document.createElement('li')
+    li.textContent = otherAnswer
+    otherReasonsUL.appendChild(li)
+  })
 }
-const countCleanedLastMonth = function (list) {
-  let count = 0
-  list.forEach((cleaned) => {
+const countRemovedLastMonth = function (unsubbedList, cleanedList) {
+  let unsubbedCount = 0
+  let cleanedCount = 0
+  cleanedList.forEach((cleaned) => {
     const cleanTime = new Date(cleaned.CLEAN_TIME)
-    if (cleanTime < endDateLastMonth && cleanTime > startDateLastMonth) count++
+    if (cleanTime < endDateLastMonth && cleanTime > startDateLastMonth) cleanedCount++
   })
-  resultDisplay.querySelector(".results-cleaned").textContent += `${month}`
-  resultDisplay.querySelector(
-    ".results-cleaned + .count"
-  ).textContent = `${count}`
-}
-const countUnSubbedLastMonth = function (list) {
-  let count = 0
-  list.forEach((unsubbed) => {
+  unsubbedList.forEach((unsubbed) => {
     const unsubTime = new Date(unsubbed.UNSUB_TIME)
-    if (unsubTime < endDateLastMonth && unsubTime > startDateLastMonth) count++
+    if (unsubTime < endDateLastMonth && unsubTime > startDateLastMonth) unsubbedCount++
   })
-  resultDisplay.querySelector(".results-unsubbed").textContent += `${month}`
-  resultDisplay.querySelector(
-    ".results-unsubbed + .count"
-  ).textContent = `${count}`
+  displayRemovedResults(unsubbedCount, cleanedCount)
 }
 
+const displayRemovedResults = function(unsubbedCount, cleanedCount) {
+  const resultsRemoved = document.querySelector('.results-removed')
+  resultsRemoved.textContent = `Total users removed in ${month}, ${year}`
+  resultDisplay.querySelector(
+    ".results-cleaned"
+  ).innerHTML += ` ${month}: <strong>${cleanedCount}</strong>`
+  resultDisplay.querySelector(
+    ".results-unsubbed"
+  ).innerHTML += ` ${month}: <strong>${unsubbedCount}</strong>`
+}
 const countSnapshotYearAgo = function (data) {
   let count = 0
   // # of subs at end of month prior year
@@ -161,17 +181,13 @@ const countSnapshotYearAgo = function (data) {
     subbedLastYearSubbedBefore
   resultDisplay.querySelector(
     ".results-snapshot"
-  ).textContent += `${month}, ${lastYear}`
-  resultDisplay.querySelector(
-    ".results-snapshot + .count"
-  ).textContent = `${count}`
+  ).innerHTML += `HISTORICAL SNAPSHOT: Total Subscribers on ${month}, ${lastDayLastYear} ${lastYear}: <strong>${count}</strong>`
 }
 
 export {
-  countCleanedLastMonth,
   countEndOfMonthTotal,
   countNewSubsLastMonth,
   countSnapshotYearAgo,
-  countUnSubbedLastMonth,
+  countRemovedLastMonth,
   getAnsweredSurvey,
 }
