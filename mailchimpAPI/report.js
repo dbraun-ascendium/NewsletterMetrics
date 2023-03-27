@@ -1,6 +1,21 @@
 const mailchimp = require("./mailchimp")
 const unslugify = require("../utils/unslugify")
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+]
 let results = {
+  send_time: "",
   open_rate: 0,
   clicks_per_unique_opens: 0,
   top_link_url: "",
@@ -22,8 +37,13 @@ async function report() {
       "opens.open_rate",
       "opens.unique_opens",
       "clicks.unique_subscriber_clicks",
+      "send_time"
     ],
   })
+  const sendDate = new Date(latestReport.send_time)
+  const sendMonth = months[sendDate.getMonth()]
+  const sendYear = sendDate.getFullYear()
+  results.send_time = `${sendMonth} ${sendYear}`
   results.open_rate = (latestReport.opens.open_rate * 100).toFixed(1)
   results.clicks_per_unique_opens = (
     (latestReport.clicks.unique_subscriber_clicks /
@@ -67,7 +87,6 @@ async function report() {
   results.top_ext_link_unique_clicks = externalLinks[0].unique_clicks
   results.top_ext_link_percent_of_unique = (externalLinks[0].unique_click_percentage*100).toFixed(1)
 
-  console.dir(externalLinks)
   return results
 }
 module.exports = report

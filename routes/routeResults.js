@@ -2,11 +2,10 @@ const express = require("express")
 const router = express.Router()
 const report = require("../mailchimpAPI/report")
 
-router.get("/", async (req, res) => {
+router.get("/results", async (req, res) => {
   const results = await report()
-  res.render("index", {
+  res.render("index", { 
     title: "Newsletter Metrics - Results",
-    send_time:results.send_time,
     clicks_per_unique_opens: results.clicks_per_unique_opens,
     open_rate: `${results.open_rate}%`,
     top_link_unslug: results.top_link_unslug,
@@ -18,7 +17,7 @@ router.get("/", async (req, res) => {
     top_ext_link_domain: results.top_ext_link_domain,
     top_ext_link_total_clicks: results.top_ext_link_total_clicks,
     top_ext_link_unique_clicks: results.top_ext_link_unique_clicks,
-    top_ext_link_percent_of_unique: `${results.top_ext_link_percent_of_unique}%`,
+    top_ext_link_percent_of_unique: `${results.top_ext_link_percent_of_unique}%`
   })
 })
 

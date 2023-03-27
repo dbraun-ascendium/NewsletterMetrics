@@ -18,33 +18,51 @@
       <ul id="loadedFiles"></ul>
     </div>
 
-    
     <div style="display: none" class="results results-top">
       <h2>Newsletter Audience*</h2>
-      <p class="results-current-total"> </p>
+      <p class="results-current-total"></p>
       <p class="results-snapshot"></p>
 
       <p class="results-removed">Total users removed in</p>
       <ul>
-        <li class="results-cleaned">Cleaned** in </li>
-        <li class="results-unsubbed">Unsubscribed in </li>
+        <li class="results-cleaned">Cleaned** in</li>
+        <li class="results-unsubbed">Unsubscribed in</li>
       </ul>
 
-      <p class="results-new-total">New Subscribers in </p>
+      <p class="results-new-total">New Subscribers in</p>
 
-      <p>*Including Ascendium Employees<br>
-        ** Cleaned contacts have email addresses that have hard bounced or repeatedly soft bounced, and are considered invalid.</p>
+      <p>
+        *Including Ascendium Employees<br />
+        ** Cleaned contacts have email addresses that have hard bounced or
+        repeatedly soft bounced, and are considered invalid.
+      </p>
     </div>
 
-    <h2>Newsletter Opens and Link Performance</h2>
-    
-      <p>Open rate: <strong><%= open_rate %></strong> (non-profit industry average 25-26%. More information <a href="https://mailchimp.com/resources/email-marketing-benchmarks/">here</a> and <a href="https://www.campaignmonitor.com/resources/guides/email-marketing-benchmarks/">here</a>.)</p>
-    <p>Clicks per unique opens: <strong><%= clicks_per_unique_opens %></strong></p>
+    <% if (open_rate) { %>
+
+    <h2><%= send_time %> Newsletter Opens and Link Performance</h2>
+
+    <p>
+      Open rate: <strong><%= open_rate %></strong> (non-profit industry average
+      25-26%. More information
+      <a href="https://mailchimp.com/resources/email-marketing-benchmarks/"
+        >here</a
+      >
+      and
+      <a
+        href="https://www.campaignmonitor.com/resources/guides/email-marketing-benchmarks/"
+        >here</a
+      >.)
+    </p>
+    <p>
+      Clicks per unique opens: <strong><%= clicks_per_unique_opens %></strong>
+    </p>
     <p>Top link: <a href="<%= top_link_url %>"><%= top_link_unslug %></a></p>
     <ul>
       <li>
-        Clicked <strong><%= top_link_total_clicks %></strong> times, <strong><%= top_link_unique_clicks
-        %></strong> unique for <strong><%= unique_click_percentage %></strong> of unique clicks.
+        Clicked <strong><%= top_link_total_clicks %></strong> times,
+        <strong><%= top_link_unique_clicks %></strong> unique for
+        <strong><%= unique_click_percentage %></strong> of unique clicks.
       </li>
     </ul>
     <p>
@@ -53,9 +71,9 @@
     </p>
     <ul>
       <li>
-        Clicked <strong><%= top_ext_link_total_clicks %></strong> times, <strong><%=
-        top_ext_link_unique_clicks %></strong> unique for <strong><%=
-        top_ext_link_percent_of_unique %></strong> of unique clicks.
+        Clicked <strong><%= top_ext_link_total_clicks %></strong> times,
+        <strong><%= top_ext_link_unique_clicks %></strong> unique for
+        <strong><%= top_ext_link_percent_of_unique %></strong> of unique clicks.
       </li>
     </ul>
 
@@ -63,9 +81,14 @@
       <h2>How They Found Us</h2>
       <p class="hear-about-us"></p>
       <table></table>
-      <p>Of the subscribers who answered “other”, the following reasons were given:</p>
+      <p>
+        Of the subscribers who answered “other”, the following reasons were
+        given:
+      </p>
       <ul></ul>
     </div>
+
+    <% } %>
 
     <script src="/js/index.js"></script>
   </body>
