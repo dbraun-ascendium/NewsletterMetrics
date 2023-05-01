@@ -59,7 +59,7 @@ const getNewSubsLastMonth = function (list) {
 }
 const countNewSubsLastMonth = function (list) {
   const count = getNewSubsLastMonth(list).length
-  resultDisplay.querySelector(".results-new-total").innerHTML += `${month}: <strong>${count}</strong>`
+  resultDisplay.querySelector(".results-new-total").innerHTML += ` ${month}: <strong>${count}</strong>`
 }
 
 const getAnsweredSurvey = function (list) {
