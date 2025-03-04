@@ -63,10 +63,10 @@ async function report() {
   clicksDetail.urls_clicked.sort((a, b) => b.total_clicks - a.total_clicks)
 
   results.top_link_url = clicksDetail.urls_clicked[0].url.split("?")[0]
-  
-  if (results.top_link_url.includes("ascendiumphilanthropy.org/news/news/")) {
+
+  if (results.top_link_url.includes("ascendiumphilanthropy.org/shared-knowledge/news-and-insights/")) {
     results.top_link_unslug = unslugify(
-      results.top_link_url.split("//")[1].split("/news/news/")[1]
+      results.top_link_url.split("//")[1].split("/shared-knowledge/news-and-insights/")[1]
     )
   } else {
     results.top_link_unslug = unslugify(
